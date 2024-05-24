@@ -1,0 +1,73 @@
+
+.title {
+  margin: 5px 0px 0px 0px;
+}
+
+.btn {
+  display: inline-block;
+  text-align: center;
+  margin: 15px auto;
+  color:black;
+  background-color: lightgray;
+  border: 2px solid black;
+  border-radius: 10px;
+  font-size: 20px;
+  font-family: 'Calibri';
+  padding: 5px 7px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  opacity: 0.7; /* Set the opacity to 70% on hover */
+}
+
+.btn:active {
+  transform: translate(0, 3px); /* Move the button 10 pixels down on hover */
+}
+
+.row1 {
+  margin:20px 0px 0px 10px;
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+}
+.row2 {
+  margin:0px 0px 0px 10px;
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+}
+
+.graph1 {
+  border-right: 2px solid rgb(186, 186, 186);
+  border-bottom: 2px solid rgb(186, 186, 186);
+  margin: 0px;
+  padding: 10px 20px 0px 0px;
+  width: 48%;
+}
+
+.graph2 {
+  /* border-left: 2px solid gray; */
+  border-bottom: 2px solid rgb(186, 186, 186);
+  margin: 0px;
+  padding: 10px 0px 0px 30px;
+  width: 48%;
+}
+
+.graph3 {
+  /* border-top: 2px solid gray; */
+  border-right: 2px solid rgb(186, 186, 186);
+  margin: 0px;
+  padding: 10px 20px 0px 0px;
+  width: 48%;
+}
+
+.graph4 {
+  /* border-top: 2px solid gray; */
+  /* border-left: 2px solid gray; */
+  margin: 0px;
+  padding: 10px 0px 0px 30px;
+  width: 48%;
+}
