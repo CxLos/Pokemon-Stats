@@ -39,7 +39,7 @@ To run this project locally, follow these steps:
   - [Pokemon Stats Dashboard](https://us-immigration-statistics-b0f238985cfe.herokuapp.com/)
 
 ```bash
-python app.py
+python pokemon.py
 ```
 
 ![Preview](./screenshots/Screenshot-.png)

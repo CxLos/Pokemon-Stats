@@ -256,8 +256,8 @@ app.layout = html.Div(children=[
 
 # Heroku Setup:
 # heroku login
-# heroku create pokemon-stats
-# heroku git:remote -a pokemon-stats
+# heroku create cxlos-pokemon-stats
+# heroku git:remote -a cxlos-pokemon-stats
 # git push heroku main
 
 # Clear Heroku Cache:
