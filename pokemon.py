@@ -517,3 +517,6 @@ if __name__ == '__main__':
 # Clear Heroku Cache:
 # heroku plugins:install heroku-repo
 # heroku repo:purge_cache -a pokemon-stats
+
+# Set buildpack for heroku
+# heroku buildpacks:set heroku/python
