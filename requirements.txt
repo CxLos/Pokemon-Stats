@@ -62,7 +62,6 @@ js==1.0
 jsonschema==4.20.0
 jsonschema-specifications==2023.11.1
 jupyter_client==8.6.0
-jupyter_core==5.5.0
 jupyterlab-widgets==3.0.9
 kiwisolver==1.4.5
 lxml==4.9.3
@@ -101,7 +100,6 @@ python-dateutil==2.8.2
 python-multipart==0.0.6
 pytz==2023.3.post1
 pywaffle==1.1.0
-pywin32==306
 PyYAML==6.0.1
 pyzmq==25.1.1
 randomuser==1.6
