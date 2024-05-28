@@ -95,7 +95,6 @@ pycparser==2.21
 Pygments==2.17.2
 pyodide-py==0.24.1
 pyparsing==3.1.1
-pypiwin32==223
 python-dateutil==2.8.2
 python-multipart==0.0.6
 pytz==2023.3.post1
