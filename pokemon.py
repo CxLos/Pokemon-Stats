@@ -11,13 +11,13 @@ import os
 import sys
 import dash
 from dash import dcc, html
-from dash.dependencies import Output, State
+from dash.dependencies import Input, Output, State
 from dash.development.base_component import Component
 
 # print('System Version:', sys.version)
 # -------------------------------------------------- DATA -------------------------------------------------------
 
-path = r'c:\Users\CxLos\OneDrive\Documents\Portfolio Projects\Pokemon-Stats\data\pokemon_data.csv'
+# path = r'c:\Users\CxLos\OneDrive\Documents\Portfolio Projects\Pokemon-Stats\data\pokemon_data.csv'
 
 # Get the current working directory
 current_dir = os.getcwd()
@@ -28,7 +28,7 @@ imm_dir = os.path.join(current_dir, "Pokemon-Stats")
 
 # Get the current directory of the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
-print('Script Directory:', script_dir)
+# print('Script Directory:', script_dir)
 
 # List the files and directories
 # print('Dirctories List:', os.listdir(current_dir))
@@ -41,10 +41,21 @@ relative_path = 'data/pokemon_data.csv'
 file_path = os.path.join(script_dir, relative_path)
 
 # Read the CSV file using the full file path
-# df = pd.read_csv(file_path)
-df = pd.read_csv(path)
+df = pd.read_csv(file_path)
+# df = pd.read_csv(path)
 
 df.set_index('dexnum', inplace=True)
+
+# Rename Columns
+df['generation'] = df['generation'].replace(1, 'Kanto')
+df['generation'] = df['generation'].replace(2, 'Johto')
+df['generation'] = df['generation'].replace(3, 'Hoenn')
+df['generation'] = df['generation'].replace(4, 'Sinnoh')
+df['generation'] = df['generation'].replace(5, 'Unova')
+df['generation'] = df['generation'].replace(6, 'Kalos')
+df['generation'] = df['generation'].replace(7, 'Alola')
+df['generation'] = df['generation'].replace(8, 'Galar')
+df['generation'] = df['generation'].replace(9, 'Paldea')
 
 # print(df.head(10))
 # print('Column Names:', df.columns)
@@ -53,7 +64,7 @@ df.set_index('dexnum', inplace=True)
 # print('Amt of duplicate rows:', duplicate_len)
 # print("Amount of duplicate rows:", df.duplicated().sum())
 
-# Column Names ---------------------------------------------------------------
+# ---------------------------------------------- Column Names ------------------------------------------------------
 
 # Column Names: Index([
 #        'dexnum', 'name', 'generation', 'type1', 'type2', 'species', 'height',
@@ -63,7 +74,17 @@ df.set_index('dexnum', inplace=True)
 #        'egg_group1', 'egg_group2', 'percent_male', 'percent_female',
 #        'egg_cycles', 'special_group']
 
-# SQL---------------------------------------------------------------------------
+# --------------------------------------------- Pokemon Types -----------------------------------------------------
+
+# Get the distinct values in column 'type1'
+# distinct_types = df['type1'].unique()
+# print('Pokemon Types:\n', distinct_types)
+
+# ['Grass' 'Fire' 'Water' 'Bug' 'Normal' 'Poison' 'Electric' 'Ground'
+#  'Fairy' 'Fighting' 'Psychic' 'Rock' 'Ghost' 'Ice' 'Dragon' 'Dark' 'Steel'
+#  'Flying']
+
+# --------------------------------------------------- SQL ----------------------------------------------------------
 
 # Connect to SQL
 con = sqlite3.connect("pokemon.db")
@@ -94,14 +115,7 @@ df_unique_types = pd.read_sql_query("""
 #   select name, type1, type2, ability1 from pokemon_data limit 9;
 # """, con)
 
-df = pd.read_sql_query("""
-  SELECT 
-    'water' AS type,
-    COUNT(*) AS count
-  FROM pokemon_data 
-  WHERE type1 ='Water' or type2 ='Water'
-""", con)
-
+# Bar Chart Number of Pokemon by Type
 df_type_counts = pd.read_sql_query("""
   SELECT 
     'Grass' AS type,
@@ -210,10 +224,114 @@ df_type_counts = pd.read_sql_query("""
     COUNT(*) AS count
   FROM pokemon_data 
   WHERE type1 = 'Flying' OR type2 = 'Flying'
-  ORDER BY count DESC
 """, con)
 
-print(df_type_counts)
+# Define custom colors for each type
+colors = {
+    'Grass': '#78C850',
+    'Fire': '#F08030',
+    'Water': '#6890F0',
+    'Bug': '#A8B820',
+    'Normal': '#A8A878',
+    'Poison': '#A040A0',
+    'Electric': '#F8D030',
+    'Ground': '#E0C068',
+    'Fairy': '#EE99AC',
+    'Fighting': '#C03028',
+    'Psychic': '#F85888',
+    'Rock': '#B8A038',
+    'Ghost': '#705898',
+    'Ice': '#98D8D8',
+    'Dragon': '#7038F8',
+    'Dark': '#705848',
+    'Steel': '#B8B8D0',
+    'Flying': '#A890F0'
+}
+
+
+# Pie Chart Number of Pokemon Introduced by Generation
+# Generations
+gen_list = pd.read_sql_query("""
+  SELECT DISTINCT generation
+  FROM pokemon_data
+""", con)
+# print(gen_list)
+
+gen_counts = pd.read_sql_query("""
+  SELECT 
+    'Kanto' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Kanto'
+  UNION ALL
+  SELECT 
+    'Johto' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Johto'
+  UNION ALL
+  SELECT 
+    'Hoenn' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Hoenn'
+  UNION ALL
+  SELECT 
+    'Sinnoh' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Sinnoh'
+  UNION ALL
+  SELECT 
+    'Unova' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Unova'
+  UNION ALL
+  SELECT 
+    'Kalos' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Kalos'
+  UNION ALL
+  SELECT 
+    'Alola' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Alola'
+  UNION ALL
+  SELECT 
+    'Galar' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Galar'
+  UNION ALL
+  SELECT 
+    'Paldea' AS generation,
+    COUNT(*) AS count
+  FROM pokemon_data 
+  WHERE generation = 'Paldea'
+  ORDER BY count DESC
+""", con)
+# print(gen_counts)
+
+# Gender Distribution
+gender_query = pd.read_sql_query("""
+  SELECT 
+    100.0 as male_only,
+    COUNT(*) as count
+  FROM pokemon_data
+  WHERE percent_male = 100
+  UNION
+  SELECT 
+    100.0 as female_only,
+    COUNT(*) as count
+  FROM pokemon_data
+  WHERE percent_female = 100
+
+""", con)
+
+print(gender_query)
 
 # print(df)
 # print(df3)
@@ -221,138 +339,148 @@ print(df_type_counts)
 con.close()
 # ----------------------------------------------- DASHBOARD -------------------------------------------------
 
-# Create dash application
-# app = dash.Dash(__name__)
-# server= app.server
+app = dash.Dash(__name__)
+server= app.server
 
-# app.layout = html.Div(children=[ 
+app.layout = html.Div(children=[ 
 
-#             html.Div([
-                
-#                 html.H1('Pokemon Statistics', 
-#                 className='title',
-#                 style={
-#                   # 'textAlign': 'center', 
-#                   # 'color': 'cadetblue',
-#                   # 'fontSize': 45, 
-#                   # 'font-family':'Calibri', 
-#                 # 'marginBottom':'5px'
-#                 }),
+    html.Div(className='divv', children=[ 
+        
+        html.H1('Pokemon Statistics', 
+        className='title'),
 
-#                 html.A(
-#                 'Repo',
-#                 href='https://github.com/CxLos/Pokemon-Stats',
-#                 className='btn')
-#                 ]),
+        html.A(
+        'Repo',
+        href='https://github.com/CxLos/Pokemon-Stats',
+        className='btn')
+        ]),
 
-            
+# ROW 1
 
-#             # html.Br(),
+html.Div(
+    className='row1',
+    children=[
 
-#             # Row 1
-#             html.Div(
-#                 className='row1',
-#                 children=[
-#                       html.Div(
-#                           className='graph1',
-#                           children=[
-#                               dcc.Graph( 
-                                    
-#                                     figure=px.bar(df.groupby('Year')['Immigrants Obtaining Lawful Permanent Resident Status'].sum().reset_index(), 
-#                                         x='Year', y='Immigrants Obtaining Lawful Permanent Resident Status').
-#                                         update_traces(line=dict(color='blue')).
-#                                         update_layout(title='Immigrants Obtaining Lawful Permanent Resident Status', 
-#                                     xaxis_title='Type', 
-#                                     yaxis_title='Number of Pokemon',
-#                                     title_x=0.5,
-#                                     font=dict(
-#                                           family='Calibri',  # Set the font family to Calibri
-#                                           size=17,          # Adjust the font size as needed
-#                                           color='black'))
-#                                 )]),
+        html.Div(
+            className='graph1',
+            children=[
+                dcc.Graph(
+                id='type-bar-chart',  # Add an id to the Graph
+                figure=px.bar(
+                    df_type_counts,
+                    x='type', y='count', color = 'type', color_discrete_map=colors
+                ).update_layout(
+                    title='Number of Pokemon by Type',
+                    xaxis_title='Type',
+                    yaxis_title='Number of Pokemon',
+                    title_x=0.5,
+                    font=dict(
+                        family='Calibri',  # Set the font family to Calibri
+                        size=17,  # Adjust the font size as needed
+                        color='black'
+                    )
+                )
+            )
+            ]
+        ),
 
-            #           html.Div(
-            #               className='graph2',
-            #               children=[
-            #                   dcc.Graph(
-            #                         figure=px.line(df.groupby('Year')['Refugee Arrivals'].sum().reset_index(), 
-            #                             x='Year', y='Refugee Arrivals').
-            #                             update_traces(line=dict(color='red')).  # Change the line color
-            #                             update_layout(title='Refugee Arrivals', 
-            #                         xaxis_title='Year', 
-            #                         yaxis_title='Refugee Arrivals',
-            #                         title_x=0.5,
-            #                         font=dict(
-            #                               family='Calibri',  # Set the font family to Calibri
-            #                               size=17,          # Adjust the font size as needed
-            #                               color='black'))
-            #                     )],
-            #                     style={
-            #                         # 'border':'2px solid black', 
-            #                         #    'border-radius':'10px', 
-            #                            'margin':'0px', 
-            #                            'width':'48%'})], 
-            #                     # style={'display': 'flex', 'textAlign': 'center'}
-            #                     ),
+        html.Div(
+            className='graph2',
+            children=[
+                 dcc.Graph(
+                    id='gen-pie-chart',  # Add an id to the Graph
+                    figure=px.pie(
+                        gen_counts,
+                        names = 'generation',
+                        values = 'count',
+                        title = 'Number of Pokemon Introduced by Generation'
+                    ).update_layout(
+                        title='Number of Pokemon Introduced by Generation',
+                        title_x=0.5,
+                        font=dict(
+                            family='Calibri',  # Set the font family to Calibri
+                            size=17,  # Adjust the font size as needed
+                            color='black'
+                    )
+                )
+            )
+            ]
+        )
+    ]
+),
 
-            # # Row 2
-            # html.Div(
-            #     className='row2',
-            #     children=[
-            #           html.Div(className='graph3',
-            #                    children=[
-            #                  dcc.Graph(
-            #               figure=px.line(df.groupby('Year')['Noncitizen Apprehensions'].sum().reset_index(), 
-            #                   x='Year', y='Noncitizen Apprehensions').
-            #                   update_traces(line=dict(color='green')).  # Change the line color
-            #                   update_layout(title='Noncitizen Apprehensions', 
-            #                xaxis_title='Year', 
-            #                yaxis_title='Noncitizen Apprehensions',
-            #                title_x=0.5,
-            #                font=dict(
-            #                     family='Calibri',  # Set the font family to Calibri
-            #                     size=17,          # Adjust the font size as needed
-            #                     color='black'))
-            #           )],
-            #           style={
-            #             #   'border':'2px solid black', 
-            #             #      'border-radius':'10px', 
-            #                 #  'margin':'10px', 
-            #                 #  'width':'49%'
-            #                  }),
+# ROW 2
 
-            #           html.Div(
-            #               className='graph4',
-            #               children=[
-            #               dcc.Graph( 
-            #               figure=px.line(df.groupby('Year')['Noncitizen Removals'].sum().reset_index(), 
-            #                   x='Year', y='Noncitizen Removals').
-            #                   update_traces(line=dict(color='orange')).  # Change the line color
-            #                   update_layout(title='Noncitizen Removals', 
-            #                xaxis_title='Year', 
-            #                yaxis_title='Noncitizen Removals',
-            #                title_x=0.5,
-            #                font=dict(
-            #                     family='Calibri',  # Set the font family to Calibri
-            #                     size=17,          # Adjust the font size as needed
-            #                     color='black'))
-            #           )],
-            #           style={
-            #             #   'border':'2px solid black', 
-            #             #      'border-radius':'10px', 
-            #                 #  'margin':'0px', 
-            #                 #  'width':'48%'
-            #                  })], 
-            #           style={'display': 'flex', 'textAlign': 'center'})
-            # ])
+html.Div(
+    className='row2',
+    children=[
+        html.Div(
+            className='graph3',
+            children=[
+                dcc.Graph(
+                id='chart',  # Add an id to the Graph
+                figure=px.bar(
+                    df_type_counts,
+                    x='type', y='count'
+                ).update_layout(
+                    title='Number of Pokemon by Type',
+                    xaxis_title='Type',
+                    yaxis_title='Number of Pokemon',
+                    title_x=0.5,
+                    font=dict(
+                        family='Calibri',  # Set the font family to Calibri
+                        size=17,  # Adjust the font size as needed
+                        color='black'
+                    )
+                )
+            )
+            ]
+        ),
 
-# Run the app
+        html.Div(
+            className='graph4',
+            children=[
+                dcc.Graph(
+                id='tchart',  # Add an id to the Graph
+                figure=px.bar(
+                    df_type_counts,
+                    x='type', y='count'
+                ).update_layout(
+                    title='Number of Pokemon by Type',
+                    xaxis_title='Type',
+                    yaxis_title='Number of Pokemon',
+                    title_x=0.5,
+                    font=dict(
+                        family='Calibri',  # Set the font family to Calibri
+                        size=17,  # Adjust the font size as needed
+                        color='black'
+                    )
+                )
+            )
+            ]
+        )
+    ]
+)
+])
+
+# callback to update the bar chart
+# @app.callback([
+#     Output('type-bar-chart', 'figure')],
+#     [Input('type-bar-chart', 'id')])    
+
+# Graphs
+def update_bar_chart(_):
+    fig = px.bar(df_type_counts, x='type', y='count',
+                 title='Count of Each Pokémon Type',
+                 labels={'type': 'Type', 'count': 'Count'})
+    return fig
+
 # if __name__ == '__main__':
 #     app.run_server(debug=True, 
-#                   #  port=8055
+#                    port=8056
 #                    )
 
-#  KILL PORT --------------------------------------------
+# ------------------------------------------------- KILL PORT -----------------------------------------------------
 
 # netstat -ano | findstr :8050
 # taskkill /PID 24772 /F

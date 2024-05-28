@@ -1,4 +1,11 @@
 
+.divv{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* margin: 20px 0px -20px 0px; */
+}
+
 .title {
   margin: 5px 0px 0px 0px;
   text-align: center;
