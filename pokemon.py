@@ -475,10 +475,10 @@ def update_bar_chart(_):
                  labels={'type': 'Type', 'count': 'Count'})
     return fig
 
-# if __name__ == '__main__':
-#     app.run_server(debug=True, 
-#                    port=8056
-#                    )
+if __name__ == '__main__':
+    app.run_server(debug=False, 
+                  #  port=8056
+                   )
 
 # ------------------------------------------------- KILL PORT -----------------------------------------------------
 
