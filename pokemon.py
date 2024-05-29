@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd 
 import seaborn as sns 
 import matplotlib.pyplot as plt 
+import plotly.figure_factory as ff
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime
@@ -58,6 +59,7 @@ df['generation'] = df['generation'].replace(8, 'Galar')
 df['generation'] = df['generation'].replace(9, 'Paldea')
 
 # print(df.head(10))
+# print('Total # o Pokemon: ', len(df))
 # print('Column Names:', df.columns)
 # print('DF Shape:', df.shape)
 # print('Dtypes:', df.dtypes)
@@ -115,7 +117,7 @@ df_unique_types = pd.read_sql_query("""
 #   select name, type1, type2, ability1 from pokemon_data limit 9;
 # """, con)
 
-# Bar Chart Number of Pokemon by Type
+# 1. Bar Chart Number of Pokemon by Type
 df_type_counts = pd.read_sql_query("""
   SELECT 
     'Grass' AS type,
@@ -249,7 +251,7 @@ colors = {
 }
 
 
-# Pie Chart Number of Pokemon Introduced by Generation
+# 2. Pie Chart Number of Pokemon Introduced by Generation
 # Generations
 gen_list = pd.read_sql_query("""
   SELECT DISTINCT generation
@@ -331,7 +333,62 @@ gender_query = pd.read_sql_query("""
 
 """, con)
 
-print(gender_query)
+# Heatmap
+
+# 4. Heatmap figure base stat correlation
+
+# Correlation matrix
+corr = df[['hp', 'attack', 'defense', 'sp_atk', 'sp_def', 'speed', 'total']].corr()
+# print(corr)
+
+# Figure
+heatmap_fig = ff.create_annotated_heatmap(
+    z=corr.values,
+    x=list(corr.columns),
+    y=list(corr.index),
+    colorscale='RdBu',
+    annotation_text=corr.round(2).values,
+    showscale=True
+)
+
+heatmap_fig.update_layout(
+    title='Correlation Matrix of Base Stats',
+    title_x=0.5,
+    font=dict(
+        family='Calibri',  # Set the font family to Calibri
+        size=17,  # Adjust the font size as needed
+        color='black'
+    )
+)
+
+# 5. box plot total stats by generation
+box_plot_fig = px.box(df, x='generation', y='total', points='all', color='generation', title='Box Plot of Total Stats by Generation')
+box_plot_fig.update_layout(
+    title='Box Plot of Total Stats by Generation',
+    title_x=0.5,
+    font=dict(
+        family='Calibri',  # Set the font family to Calibri
+        size=17,  # Adjust the font size as needed
+        color='black'
+    ),
+    xaxis_title='Generation',
+    yaxis_title='Total Stats'
+)
+
+# 6. average stats by generation figure
+# avg_stats_by_gen = df.groupby('generation').mean().reset_index()
+# avg_stats_fig = px.bar(avg_stats_by_gen, x='generation', y='total', title='Average Total Stats by Generation')
+# avg_stats_fig.update_layout(
+#     title='Average Total Stats by Generation',
+#     title_x=0.5,
+#     font=dict(
+#         family='Calibri',  # Set the font family to Calibri
+#         size=17,  # Adjust the font size as needed
+#         color='black'
+#     ),
+#     xaxis_title='Generation',
+#     yaxis_title='Average Total Stats'
+# )
 
 # print(df)
 # print(df3)
@@ -387,23 +444,45 @@ html.Div(
         html.Div(
             className='graph2',
             children=[
-                 dcc.Graph(
-                    id='gen-pie-chart',  # Add an id to the Graph
-                    figure=px.pie(
-                        gen_counts,
-                        names = 'generation',
-                        values = 'count',
-                        title = 'Number of Pokemon Introduced by Generation'
-                    ).update_layout(
-                        title='Number of Pokemon Introduced by Generation',
-                        title_x=0.5,
-                        font=dict(
-                            family='Calibri',  # Set the font family to Calibri
-                            size=17,  # Adjust the font size as needed
-                            color='black'
+            #      dcc.Graph(
+            #         id='gen-pie-chart', 
+            #         figure=px.pie(
+            #             gen_counts,
+            #             names = 'generation',
+            #             values = 'count',
+            #             title = 'Number of Pokemon Introduced by Generation'
+            #         ).update_layout(
+            #             title='Number of Pokemon Introduced by Generation',
+            #             title_x=0.5,
+            #             font=dict(
+            #                 family='Calibri',  # Set the font family to Calibri
+            #                 size=17,  # Adjust the font size as needed
+            #                 color='black'
+            #         )
+            #     )
+            # )
+                    dcc.Graph(
+                        id='gen-bar-chart',  # Changed id to reflect the new chart type
+                        figure=px.bar(
+                            gen_counts,
+                            x='count',
+                            y='generation',
+                            orientation='h',  # Set the orientation to horizontal
+                            title='Number of Pokemon Introduced by Generation',
+                            color='generation',  # Optional: color by generation for better visualization
+                            color_discrete_sequence=px.colors.qualitative.Safe  # Optional: change color palette
+                        ).update_layout(
+                            title='Number of Pokemon Introduced by Generation',
+                            title_x=0.5,
+                            font=dict(
+                                family='Calibri',  # Set the font family to Calibri
+                                size=17,  # Adjust the font size as needed
+                                color='black'
+                            ),
+                            xaxis_title='Number of Pokemon',
+                            yaxis_title='Generation'
+                        )
                     )
-                )
-            )
             ]
         )
     ]
@@ -417,46 +496,60 @@ html.Div(
         html.Div(
             className='graph3',
             children=[
-                dcc.Graph(
-                id='chart',  # Add an id to the Graph
-                figure=px.bar(
-                    df_type_counts,
-                    x='type', y='count'
-                ).update_layout(
-                    title='Number of Pokemon by Type',
-                    xaxis_title='Type',
-                    yaxis_title='Number of Pokemon',
-                    title_x=0.5,
-                    font=dict(
-                        family='Calibri',  # Set the font family to Calibri
-                        size=17,  # Adjust the font size as needed
-                        color='black'
-                    )
-                )
-            )
+               html.H1('Total Number of Pokemon', className='pkmntotal'),
+               html.H2('1,025', className='count')
             ]
         ),
 
         html.Div(
             className='graph4',
             children=[
-                dcc.Graph(
-                id='tchart',  # Add an id to the Graph
-                figure=px.bar(
-                    df_type_counts,
-                    x='type', y='count'
-                ).update_layout(
-                    title='Number of Pokemon by Type',
-                    xaxis_title='Type',
-                    yaxis_title='Number of Pokemon',
-                    title_x=0.5,
-                    font=dict(
-                        family='Calibri',  # Set the font family to Calibri
-                        size=17,  # Adjust the font size as needed
-                        color='black'
+                         dcc.Graph(
+                    id='tchart',  # Add an id to the Graph
+                    figure=ff.create_annotated_heatmap(
+                        z=corr.values,
+                        x=list(corr.columns),
+                        y=list(corr.index),
+                        colorscale='Viridis',
+                        annotation_text=corr.round(2).values,
+                        showscale=True
+                    ).update_layout(
+                        title='Correlation Matrix of Base Stats',
+                        title_x=0.5,
+                        font=dict(
+                            family='Calibri',  # Set the font family to Calibri
+                            size=17,  # Adjust the font size as needed
+                            color='black'
+                        )
                     )
                 )
-            )
+            ]
+        )
+    ]
+),
+
+# ROW 3
+
+html.Div(
+    className='row3',
+    children=[
+        html.Div(
+            className='graph5',
+            children=[
+                dcc.Graph(
+                    id='box-plot',
+                    figure=box_plot_fig
+                )
+            ]
+        ),
+
+        html.Div(
+            className='graph6',
+            children=[
+                # dcc.Graph(
+                    # id='avg-stats',
+                    # figure=avg_stats_fig
+                # )
             ]
         )
     ]
@@ -476,7 +569,7 @@ def update_bar_chart(_):
     return fig
 
 if __name__ == '__main__':
-    app.run_server(debug=False, 
+    app.run_server(debug=True, 
                   #  port=8056
                    )
 
@@ -507,6 +600,10 @@ if __name__ == '__main__':
 # Check dependency tree:
 # pipdeptree
 # pip show package-name
+
+# Remove
+# pypiwin32
+# jupytercore
 
 # Heroku Setup:
 # heroku login

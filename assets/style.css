@@ -14,6 +14,22 @@
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
+.pkmntotal {
+  margin: 5px 0px 0px 0px;
+  text-align: center;
+  color: rgb(255, 41, 41);
+  font-size: 60px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.count {
+  margin: 120px 0px 0px 0px;
+  text-align: center;
+  color: rgb(84, 84, 84);
+  font-size: 80px;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
 .btn {
   display: inline-block;
   text-align: center;
@@ -51,6 +67,15 @@
   text-align: center;
 }
 
+.row3 {
+  margin:0px 20px 0px 20px;
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  border-top: 2px solid rgb(186, 186, 186);
+}
+
 .graph1 {
   border-right: 2px solid rgb(186, 186, 186);
   border-bottom: 2px solid rgb(186, 186, 186);
@@ -81,4 +106,11 @@
   margin: 0px;
   padding: 10px 0px 0px 30px;
   width: 48%;
+}
+.graph5 {
+  /* border-top: 2px solid gray; */
+  /* border-left: 2px solid gray; */
+  margin: 0px;
+  padding: 0px 0px 0px 0px;
+  width: 95%;
 }

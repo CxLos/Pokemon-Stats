@@ -36,13 +36,13 @@ To run this project locally, follow these steps:
 
 - To launch the dashboard, execute the following command in your terminal or click the following link:
 
-  - [Pokemon Stats Dashboard](https://us-immigration-statistics-b0f238985cfe.herokuapp.com/)
+  - [Pokemon Stats Dashboard](https://cxlos-pokemon-stats-45bbc3565284.herokuapp.com/)
 
 ```bash
 python pokemon.py
 ```
 
-![Preview](./screenshots/Screenshot-.png)
+![Preview](./screenshots/Screenshot-0345.png)
 
 ## Methodology
 
