@@ -252,7 +252,7 @@ colors = {
 
 
 # 2. Pie Chart Number of Pokemon Introduced by Generation
-# Generations
+
 gen_list = pd.read_sql_query("""
   SELECT DISTINCT generation
   FROM pokemon_data
@@ -317,26 +317,7 @@ gen_counts = pd.read_sql_query("""
 """, con)
 # print(gen_counts)
 
-# Gender Distribution
-gender_query = pd.read_sql_query("""
-  SELECT 
-    100.0 as male_only,
-    COUNT(*) as count
-  FROM pokemon_data
-  WHERE percent_male = 100
-  UNION
-  SELECT 
-    100.0 as female_only,
-    COUNT(*) as count
-  FROM pokemon_data
-  WHERE percent_female = 100
-
-""", con)
-
-# Heatmap
-
 # 4. Heatmap figure base stat correlation
-
 # Correlation matrix
 corr = df[['hp', 'attack', 'defense', 'sp_atk', 'sp_def', 'speed', 'total']].corr()
 # print(corr)
@@ -355,20 +336,20 @@ heatmap_fig.update_layout(
     title='Correlation Matrix of Base Stats',
     title_x=0.5,
     font=dict(
-        family='Calibri',  # Set the font family to Calibri
-        size=17,  # Adjust the font size as needed
+        family='Calibri',  
+        size=17,  
         color='black'
     )
 )
 
-# 5. box plot total stats by generation
+# 6. box plot total stats by generation
 box_plot_fig = px.box(df, x='generation', y='total', points='all', color='generation', title='Box Plot of Total Stats by Generation')
 box_plot_fig.update_layout(
     title='Box Plot of Total Stats by Generation',
     title_x=0.5,
     font=dict(
-        family='Calibri',  # Set the font family to Calibri
-        size=17,  # Adjust the font size as needed
+        family='Calibri',  
+        size=17,  
         color='black'
     ),
     xaxis_title='Generation',
@@ -407,7 +388,7 @@ html.Div(
             className='graph1',
             children=[
                 dcc.Graph(
-                id='type-bar-chart',  # Add an id to the Graph
+                id='type-bar-chart',  
                 figure=px.bar(
                     df_type_counts,
                     x='type', y='count', color = 'type', color_discrete_map=colors
@@ -417,8 +398,8 @@ html.Div(
                     yaxis_title='Number of Pokemon',
                     title_x=0.5,
                     font=dict(
-                        family='Calibri',  # Set the font family to Calibri
-                        size=17,  # Adjust the font size as needed
+                        family='Calibri',  
+                        size=17,  
                         color='black'
                     )
                 )
@@ -429,39 +410,22 @@ html.Div(
         html.Div(
             className='graph2',
             children=[
-            #      dcc.Graph(
-            #         id='gen-pie-chart', 
-            #         figure=px.pie(
-            #             gen_counts,
-            #             names = 'generation',
-            #             values = 'count',
-            #             title = 'Number of Pokemon Introduced by Generation'
-            #         ).update_layout(
-            #             title='Number of Pokemon Introduced by Generation',
-            #             title_x=0.5,
-            #             font=dict(
-            #                 family='Calibri',  # Set the font family to Calibri
-            #                 size=17,  # Adjust the font size as needed
-            #                 color='black'
-            #         )
-            #     )
-            # )
                     dcc.Graph(
-                        id='gen-bar-chart',  # Changed id to reflect the new chart type
+                        id='gen-bar-chart', 
                         figure=px.bar(
                             gen_counts,
                             x='count',
                             y='generation',
-                            orientation='h',  # Set the orientation to horizontal
+                            orientation='h',  
                             title='Number of Pokemon Introduced by Generation',
-                            color='generation',  # Optional: color by generation for better visualization
-                            color_discrete_sequence=px.colors.qualitative.Safe  # Optional: change color palette
+                            color='generation', 
+                            color_discrete_sequence=px.colors.qualitative.Safe  
                         ).update_layout(
                             title='Number of Pokemon Introduced by Generation',
                             title_x=0.5,
                             font=dict(
-                                family='Calibri',  # Set the font family to Calibri
-                                size=17,  # Adjust the font size as needed
+                                family='Calibri', 
+                                size=17,  
                                 color='black'
                             ),
                             xaxis_title='Number of Pokemon',
@@ -524,26 +488,14 @@ html.Div(
     ]
 ),
 
-# ROW 4
-    # html.Div(className='row4', children=[
-    #     html.Div(className='graph7', children=[
-    #         dcc.Dropdown(
-    #             className='',
-    #             id='type-dropdown',
-    #             options=[{'label': type_, 'value': type_} for type_ in df['type1'].unique()],
-    #             value='Fire',
-    #             placeholder="Select a Pokémon Type"
-    #         ),
-    #         dcc.Graph(id='type-pie-chart')
-    #     ])
-    # ])
 ])
 
-# Callback function to update the pie chart based on the selected type
+# Callback function
 @app.callback(
     Output('type-pie-chart', 'figure'),
     [Input('type-dropdown', 'value')]
 )
+
 def update_pie_chart(selected_type):
     filtered_df = df[df['type1'] == selected_type]
     avg_stats = filtered_df[['hp', 'attack', 'defense', 'sp_atk', 'sp_def', 'speed']].mean().reset_index()
