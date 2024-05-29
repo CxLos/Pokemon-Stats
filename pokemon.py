@@ -375,21 +375,6 @@ box_plot_fig.update_layout(
     yaxis_title='Total Stats'
 )
 
-# 6. average stats by generation figure
-# avg_stats_by_gen = df.groupby('generation').mean().reset_index()
-# avg_stats_fig = px.bar(avg_stats_by_gen, x='generation', y='total', title='Average Total Stats by Generation')
-# avg_stats_fig.update_layout(
-#     title='Average Total Stats by Generation',
-#     title_x=0.5,
-#     font=dict(
-#         family='Calibri',  # Set the font family to Calibri
-#         size=17,  # Adjust the font size as needed
-#         color='black'
-#     ),
-#     xaxis_title='Generation',
-#     yaxis_title='Average Total Stats'
-# )
-
 # print(df)
 # print(df3)
 
@@ -489,47 +474,41 @@ html.Div(
 ),
 
 # ROW 2
-
-html.Div(
-    className='row2',
-    children=[
-        html.Div(
-            className='graph3',
-            children=[
-               html.H1('Total Number of Pokemon', className='pkmntotal'),
-               html.H2('1,025', className='count')
-            ]
-        ),
-
-        html.Div(
-            className='graph4',
-            children=[
-                         dcc.Graph(
-                    id='tchart',  # Add an id to the Graph
-                    figure=ff.create_annotated_heatmap(
-                        z=corr.values,
-                        x=list(corr.columns),
-                        y=list(corr.index),
-                        colorscale='Viridis',
-                        annotation_text=corr.round(2).values,
-                        showscale=True
-                    ).update_layout(
-                        title='Correlation Matrix of Base Stats',
-                        title_x=0.5,
-                        font=dict(
-                            family='Calibri',  # Set the font family to Calibri
-                            size=17,  # Adjust the font size as needed
-                            color='black'
-                        )
+    html.Div(className='row2', children=[
+        html.Div(className='graph3', children=[
+            dcc.Dropdown(
+                className='type-input',
+                id='type-dropdown',
+                options=[{'label': type_, 'value': type_} for type_ in df['type1'].unique()],
+                value='Fire',
+                placeholder="Select a Pokémon Type"
+            ),
+            dcc.Graph(id='type-pie-chart')
+        ]),
+        html.Div(className='graph4', children=[
+            dcc.Graph(
+                id='tchart',
+                figure=ff.create_annotated_heatmap(
+                    z=corr.values,
+                    x=list(corr.columns),
+                    y=list(corr.columns),
+                    colorscale='portland',
+                    annotation_text=corr.round(2).values,
+                    showscale=True
+                ).update_layout(
+                    title='Correlation Matrix of Base Stats',
+                    title_x=0.5,
+                    font=dict(
+                        family='Calibri',
+                        size=17,
+                        color='black'
                     )
                 )
-            ]
-        )
-    ]
-),
+            )
+        ])
+    ]),
 
 # ROW 3
-
 html.Div(
     className='row3',
     children=[
@@ -541,31 +520,58 @@ html.Div(
                     figure=box_plot_fig
                 )
             ]
-        ),
-
-        html.Div(
-            className='graph6',
-            children=[
-                # dcc.Graph(
-                    # id='avg-stats',
-                    # figure=avg_stats_fig
-                # )
-            ]
         )
     ]
-)
+),
+
+# ROW 4
+    # html.Div(className='row4', children=[
+    #     html.Div(className='graph7', children=[
+    #         dcc.Dropdown(
+    #             className='',
+    #             id='type-dropdown',
+    #             options=[{'label': type_, 'value': type_} for type_ in df['type1'].unique()],
+    #             value='Fire',
+    #             placeholder="Select a Pokémon Type"
+    #         ),
+    #         dcc.Graph(id='type-pie-chart')
+    #     ])
+    # ])
 ])
 
-# callback to update the bar chart
-# @app.callback([
-#     Output('type-bar-chart', 'figure')],
-#     [Input('type-bar-chart', 'id')])    
+# Callback function to update the pie chart based on the selected type
+@app.callback(
+    Output('type-pie-chart', 'figure'),
+    [Input('type-dropdown', 'value')]
+)
+def update_pie_chart(selected_type):
+    filtered_df = df[df['type1'] == selected_type]
+    avg_stats = filtered_df[['hp', 'attack', 'defense', 'sp_atk', 'sp_def', 'speed']].mean().reset_index()
+    avg_stats.columns = ['stat', 'average']
+    avg_stats['average'] = avg_stats['average'].round(0).astype(int)  # Round to the nearest whole number
 
-# Graphs
-def update_bar_chart(_):
-    fig = px.bar(df_type_counts, x='type', y='count',
-                 title='Count of Each Pokémon Type',
-                 labels={'type': 'Type', 'count': 'Count'})
+    fig = px.pie(
+        avg_stats,
+        names='stat',
+        values='average',
+        title=f'Average Base Stats for {selected_type} Type Pokémon'
+    )
+
+    fig.update_layout(
+        title=f'Average Base Stats for {selected_type} Type Pokémon',
+        title_x=0.5,
+        font=dict(
+            family='Calibri',
+            size=17,
+            color='black'
+        )
+    )
+
+    fig.update_traces(
+        textinfo='label+value',
+        hovertemplate='<b>%{label}</b>: %{value}<extra></extra>'
+    )
+
     return fig
 
 if __name__ == '__main__':
@@ -617,3 +623,21 @@ if __name__ == '__main__':
 
 # Set buildpack for heroku
 # heroku buildpacks:set heroku/python
+
+# Heatmap Colorscale colors -----------------------------------------------------------------------------
+
+#   ['aggrnyl', 'agsunset', 'algae', 'amp', 'armyrose', 'balance',
+            #  'blackbody', 'bluered', 'blues', 'blugrn', 'bluyl', 'brbg',
+            #  'brwnyl', 'bugn', 'bupu', 'burg', 'burgyl', 'cividis', 'curl',
+            #  'darkmint', 'deep', 'delta', 'dense', 'earth', 'edge', 'electric',
+            #  'emrld', 'fall', 'geyser', 'gnbu', 'gray', 'greens', 'greys',
+            #  'haline', 'hot', 'hsv', 'ice', 'icefire', 'inferno', 'jet',
+            #  'magenta', 'magma', 'matter', 'mint', 'mrybm', 'mygbm', 'oranges',
+            #  'orrd', 'oryel', 'oxy', 'peach', 'phase', 'picnic', 'pinkyl',
+            #  'piyg', 'plasma', 'plotly3', 'portland', 'prgn', 'pubu', 'pubugn',
+            #  'puor', 'purd', 'purp', 'purples', 'purpor', 'rainbow', 'rdbu',
+            #  'rdgy', 'rdpu', 'rdylbu', 'rdylgn', 'redor', 'reds', 'solar',
+            #  'spectral', 'speed', 'sunset', 'sunsetdark', 'teal', 'tealgrn',
+            #  'tealrose', 'tempo', 'temps', 'thermal', 'tropic', 'turbid',
+            #  'turbo', 'twilight', 'viridis', 'ylgn', 'ylgnbu', 'ylorbr',
+            #  'ylorrd'].

@@ -94,6 +94,10 @@
 
 .graph3 {
   /* border-top: 2px solid gray; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   border-right: 2px solid rgb(186, 186, 186);
   margin: 0px;
   padding: 10px 20px 0px 0px;
@@ -107,10 +111,30 @@
   padding: 10px 0px 0px 30px;
   width: 48%;
 }
+
 .graph5 {
   /* border-top: 2px solid gray; */
   /* border-left: 2px solid gray; */
   margin: 0px;
   padding: 0px 0px 0px 0px;
   width: 95%;
+}
+
+.graph7 {
+  /* border-top: 2px solid gray; */
+  /* border-left: 2px solid gray; */
+  margin: 0px;
+  padding: 0px 0px 0px 0px;
+  width: 48%;
+}
+
+.type-input {
+  /* display: flex;
+  align-self: center;
+  align-content:center;
+  align-items: center; */
+  width:20vw;
+  /* height: auto; */
+  font-size: 20px;
+  font-family: 'Calibri';
 }
