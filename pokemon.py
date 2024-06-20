@@ -546,7 +546,7 @@ if __name__ == '__main__':
 # 5. git push heroku main
 
 # Create venv 
-# virtualenv venv # creates a virtualenv called "venv"
+# virtualenv venv 
 # source venv/bin/activate # uses the virtualenv
 
 # Update PIP Setup Tools:
