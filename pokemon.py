@@ -63,7 +63,6 @@ df['generation'] = df['generation'].replace(9, 'Paldea')
 # print('Column Names:', df.columns)
 # print('DF Shape:', df.shape)
 # print('Dtypes:', df.dtypes)
-# print('Amt of duplicate rows:', duplicate_len)
 # print("Amount of duplicate rows:", df.duplicated().sum())
 
 # ---------------------------------------------- Column Names ------------------------------------------------------
